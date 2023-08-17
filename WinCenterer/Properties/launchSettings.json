@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WinCenterer": {
+      "commandName": "Project",
+      "commandLineArgs": "Диспетчер задач"
+    }
+  }
+}
