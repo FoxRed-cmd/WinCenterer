@@ -50,6 +50,8 @@ public class Program
         {
             if (_countCtrlPressed != 0)
                 _countCtrlPressed = 0;
+
+            SettingsHelper.CheckThemeChange();
         };
 
         _menu = new();
@@ -97,15 +99,23 @@ public class Program
         WindowFocusTracker.StartTracking();
 
         _currentWindow = WindowHelper.GetForegroundWindow();
+        GetWindowTitle(_currentWindow);
+        if (_foregroundTitle.ToLower() == "program manager")
+            _currentWindow = IntPtr.Zero;
 
         Application.Run();
     }
 
-    private static void WindowFocusTracker_WindowFocusChanged(object? sender, IntPtr hWnd)
+    private static void GetWindowTitle(IntPtr hWnd)
     {
         _windowName = new(256);
         _ = WindowHelper.GetWindowText(hWnd, _windowName, _windowName.Capacity);
         _foregroundTitle = _windowName.ToString();
+    }
+
+    private static void WindowFocusTracker_WindowFocusChanged(object? sender, IntPtr hWnd)
+    {
+        GetWindowTitle(hWnd);
 
         switch (_foregroundTitle.ToLower())
         {
@@ -113,9 +123,11 @@ public class Program
             case "search":
             case "центр уведомлений":
             case "action center":
+            return;
+
             case "program manager":
                 _currentWindow = IntPtr.Zero;
-                return;
+            return;
         }
 
         if (_foregroundTitle == "")
@@ -138,7 +150,7 @@ public class Program
             }
         }
 
-        _currentWindow = hWnd;
+        _currentWindow = WindowHelper.GetForegroundWindow();
     }
 
     private static void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
@@ -158,6 +170,21 @@ public class Program
     {
         if (hwnd == IntPtr.Zero)
             return;
+
+        GetWindowTitle(hwnd);
+
+        switch (_foregroundTitle.ToLower())
+        {
+            case "поиск":
+            case "search":
+            case "центр уведомлений":
+            case "action center":
+                return;
+
+            case "program manager":
+                _currentWindow = IntPtr.Zero;
+            return;
+        }
 
         WindowHelper.CenterWindow(hwnd);
     }
