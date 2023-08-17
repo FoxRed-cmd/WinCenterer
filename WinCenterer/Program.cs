@@ -19,8 +19,12 @@ public class Program
         _keyboardHookManager = new();
         _keyboardHookManager.KeyUp += (s, e) =>
         {
-           if (e.KeyCode == Keys.LControlKey)
+            if (e.KeyCode != Keys.LControlKey)
+                _countCtrlPressed = 0;
+
+            if (e.KeyCode == Keys.LControlKey)
                 _countCtrlPressed++;
+
             if (_countCtrlPressed == 3)
             {
                 _countCtrlPressed = 0;
@@ -101,13 +105,12 @@ public class Program
             _currentWindowHotKeys = WindowHelper.GetForegroundWindow();
     }
 
-    private static void Timer_Tick(object sender, EventArgs e)
+    private static void Timer_Tick(object? sender, EventArgs e)
     {
         if (_currentWindow != WindowHelper.GetForegroundWindow())
             _currentWindow = WindowHelper.GetForegroundWindow();
 
         SettingsHelper.CheckThemeChange();
-        _countCtrlPressed = 0;
     }
 
     private static void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
