@@ -4,7 +4,6 @@ using WinCenterer.Properties;
 public class Program
 {
     static IntPtr _currentWindow;
-    static IntPtr _currentWindowHotKeys;
     public static NotifyIcon? _notifyIcon;
     static ContextMenuStrip? _menu;
     static KeyboardHookManager _keyboardHookManager;
@@ -28,7 +27,7 @@ public class Program
             if (_countCtrlPressed == 3)
             {
                 _countCtrlPressed = 0;
-                GoCenter(_currentWindowHotKeys);
+                GoCenter(_currentWindow);
             }   
         };
 
@@ -41,30 +40,16 @@ public class Program
 
         SettingsHelper.ReadSettings();
 
-        System.Windows.Forms.Timer timer = new()
-        {
-            Interval = 1500,
-            Enabled = true,
-        };
-        timer.Tick += Timer_Tick;
-
         System.Windows.Forms.Timer timerCtrlPressed = new()
         {
-            Interval = 2000,
+            Interval = 2500,
             Enabled = true,
         };
         timerCtrlPressed.Tick += (s, e) =>
         {
             if (_countCtrlPressed != 0)
                 _countCtrlPressed = 0;
-        }; 
-
-        System.Windows.Forms.Timer timerHot = new()
-        {
-            Interval = 100,
-            Enabled = true,
         };
-        timerHot.Tick += TimerHot_Tick;
 
         _menu = new();
         _menu.ShowImageMargin = false;
@@ -107,21 +92,30 @@ public class Program
 
         _keyboardHookManager.Start();
 
+        WindowFocusTracker.WindowFocusChanged += WindowFocusTracker_WindowFocusChanged;
+        WindowFocusTracker.StartTracking();
+
+        _currentWindow = WindowHelper.GetForegroundWindow();
+
         Application.Run();
     }
 
-    private static void TimerHot_Tick(object? sender, EventArgs e)
+    private static void WindowFocusTracker_WindowFocusChanged(object? sender, IntPtr hWnd)
     {
-        if (_currentWindowHotKeys != WindowHelper.GetForegroundWindow())
-            _currentWindowHotKeys = WindowHelper.GetForegroundWindow();
-    }
+        _windowName = new(256);
+        _ = WindowHelper.GetWindowText(hWnd, _windowName, _windowName.Capacity);
+        _foregroundTitle = _windowName.ToString();
 
-    private static void Timer_Tick(object? sender, EventArgs e)
-    {
-        if (_currentWindow != WindowHelper.GetForegroundWindow())
-            _currentWindow = WindowHelper.GetForegroundWindow();
-
-        SettingsHelper.CheckThemeChange();
+        switch (_foregroundTitle.ToLower())
+        {
+            case "":
+            case "поиск":
+            case "search":
+            case "центр уведомлений":
+            case "action center":
+                return;
+        }
+        _currentWindow = hWnd;
     }
 
     private static void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
@@ -141,20 +135,6 @@ public class Program
     {
         if (hwnd == IntPtr.Zero)
             return;
-
-        _windowName = new(256);
-        _ = WindowHelper.GetWindowText(hwnd, _windowName, _windowName.Capacity);
-        _foregroundTitle = _windowName.ToString();
-
-        switch (_foregroundTitle.ToLower())
-        {
-            case "": 
-            case "поиск":
-            case "search":
-            case "центр уведомлений":
-            case "action center":
-                return;
-        }
 
         WindowHelper.CenterWindow(hwnd);
     }
