@@ -17,7 +17,7 @@ public class Program
         string menuTitle = "Запускать при старте Windows";
 
         _keyboardHookManager = new();
-        _keyboardHookManager.KeyDown += (s, e) =>
+        _keyboardHookManager.KeyUp += (s, e) =>
         {
            if (e.KeyCode == Keys.LControlKey)
                 _countCtrlPressed++;
