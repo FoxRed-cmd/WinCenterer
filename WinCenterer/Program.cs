@@ -111,6 +111,7 @@ public class Program
             _currentWindow = WindowHelper.GetForegroundWindow();
 
         SettingsHelper.CheckThemeChange();
+        _countCtrlPressed = 0;
     }
 
     private static void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
