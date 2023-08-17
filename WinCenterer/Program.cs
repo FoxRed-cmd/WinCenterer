@@ -48,6 +48,17 @@ public class Program
         };
         timer.Tick += Timer_Tick;
 
+        System.Windows.Forms.Timer timerCtrlPressed = new()
+        {
+            Interval = 2000,
+            Enabled = true,
+        };
+        timerCtrlPressed.Tick += (s, e) =>
+        {
+            if (_countCtrlPressed != 0)
+                _countCtrlPressed = 0;
+        }; 
+
         System.Windows.Forms.Timer timerHot = new()
         {
             Interval = 100,
@@ -111,7 +122,6 @@ public class Program
             _currentWindow = WindowHelper.GetForegroundWindow();
 
         SettingsHelper.CheckThemeChange();
-        _countCtrlPressed = 0;
     }
 
     private static void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
