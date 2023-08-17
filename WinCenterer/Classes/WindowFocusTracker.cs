@@ -14,7 +14,7 @@ public class WindowFocusTracker
     private static extern bool UnhookWinEvent(IntPtr hWinEventHook);
 
     [DllImport("user32.dll")]
-    private static extern bool GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+    public static extern bool GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
     public static event EventHandler<IntPtr> WindowFocusChanged;
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using WinCenterer.Properties;
 
 public class Program
@@ -108,13 +109,35 @@ public class Program
 
         switch (_foregroundTitle.ToLower())
         {
-            case "":
             case "поиск":
             case "search":
             case "центр уведомлений":
             case "action center":
+            case "program manager":
+                _currentWindow = IntPtr.Zero;
                 return;
         }
+
+        if (_foregroundTitle == "")
+        {
+            int id;
+            WindowFocusTracker.GetWindowThreadProcessId(hWnd, out id);
+            var proc = Process.GetProcessById(id);
+
+            switch (proc.ProcessName)
+            {
+                case "explorer":
+                    if (proc.MainWindowHandle == hWnd)
+                        return;
+                    _currentWindow = WindowHelper.GetForegroundWindow();
+                return;
+                default:
+                    _currentWindow = WindowHelper.GetForegroundWindow();
+                    return;
+
+            }
+        }
+
         _currentWindow = hWnd;
     }
 
