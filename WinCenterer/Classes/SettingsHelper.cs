@@ -55,6 +55,9 @@ internal static class SettingsHelper
     {
         using (_wrReg = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
         {
+            if (_wrReg is null)
+                return;
+
             if (_wrReg.GetValue("SystemUsesLightTheme") != null)
                 IsLightTheme = Convert.ToBoolean(_wrReg.GetValue("SystemUsesLightTheme"));
         }
