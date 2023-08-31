@@ -1,4 +1,6 @@
-﻿using System.Management;
+﻿using System.Drawing;
+using System;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 using Timer = System.Windows.Forms.Timer;
